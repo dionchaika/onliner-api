@@ -177,7 +177,7 @@ class Onliner
      *
      *              'id'         => 'ZMs3P9uwHN5jH8tB',
      *              'hash'       => 'd8c0e9882ca76491ec95d01ce062df05',
-     *              'status'     => 'uploaded',
+     *              'status'     => 'processed',
      *              'created_at' => '2019-06-04 14:55:15',
      *              'updated_at' => '2019-06-04 14:55:15',
      *              'errors'     => [],
