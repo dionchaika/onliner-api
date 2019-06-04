@@ -108,4 +108,15 @@ class Onliner
 
         $this->loggedIn = true;
     }
+
+    /**
+     * Log out.
+     *
+     * @return void
+     */
+    public function logout(): void
+    {
+        $this->loggedIn = false;
+        $this->client->getCookieStorage()->clearSessionCookies();
+    }
 }
