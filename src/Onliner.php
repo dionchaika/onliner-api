@@ -169,6 +169,37 @@ class Onliner
     }
 
     /**
+     * Get the account ID.
+     *
+     * @return int
+     *
+     * @throws \RuntimeException
+     */
+    public function getAccountId(): int
+    {
+        if (!$this->loggedIn) {
+            throw new RuntimeException('Client is not logged in!');
+        }
+
+        $uri = new Uri('https://profile.onliner.by/');
+        try {
+            $response = $this->client->sendRequest($this->factory->createRequest('GET', $uri));
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error loading page: '.$uri.'!');
+        }
+
+        if (!preg_match('/window\.onlinerStatusTracker\.init\((\d+)\)\;/', $response->getBody(), $matches)) {
+            throw new RuntimeException('Error getting account ID!');
+        }
+
+        return (int)$matches[1];
+    }
+
+    /**
      * Upload an image.
      *
      * Return data example:
