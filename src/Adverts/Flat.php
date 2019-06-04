@@ -2,10 +2,10 @@
 
 namespace API\Onliner\Adverts;
 
-use API\Kufar\Finder;
+use API\Onliner\Finder;
 use Dionchaika\Http\Uri;
 use InvalidArgumentException;
-use API\Kufar\AdvertInterface;
+use API\Onliner\AdvertInterface;
 use Psr\Http\Message\RequestInterface;
 use Dionchaika\Http\Factory\RequestFactory;
 
