@@ -14,6 +14,11 @@ use Psr\Http\Client\ClientExceptionInterface;
 class Onliner
 {
     /**
+     * The device ID.
+     */
+    const DEVICE_ID = '66d2a10174fba8def5a773f914908b4d';
+
+    /**
      * The HTTP client.
      *
      * @var \Dionchaika\Http\Client\Client
@@ -96,8 +101,12 @@ class Onliner
         ];
 
         $uri = new Uri('https://www.onliner.by/sdapi/user.api/login');
+        $request = $this->factory->createJsonRequest('POST', $uri, $data)
+            ->withHeader('X-Api-Version', '2')
+            ->withHeader('X-Onliner-Device', self::DEVICE_ID);
+
         try {
-            $response = $this->client->sendRequest($this->factory->createJsonRequest('POST', $uri, $data));
+            $response = $this->client->sendRequest($request);
         } catch (ClientExceptionInterface $e) {
             throw new RuntimeException($e->getMessage());
         }
