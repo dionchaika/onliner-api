@@ -89,7 +89,8 @@ class Flat implements AdvertInterface
     /**
      * The flat advert constructor.
      *
-     * @param  array  $images
+     * @param  int  $accountId
+     * @param  string[]  $images
      * @param  bool  $resale
      * @param  string  $walling
      * @param  bool  $repaired
@@ -100,21 +101,22 @@ class Flat implements AdvertInterface
      * @param  int  $numberOfFloors
      * @param  bool  $combinedKitchen
      * @param  int  $priceAmount
+     * @param  string  $priceCurrency
      * @param  string  $sellerName
      * @param  string  $sellerUnp
      * @param  string  $contactName
-     * @param  string  $priceCurrency
      * @param  float|null  $totalArea
      * @param  float|null  $livingArea
      * @param  float|null  $kitchenArea
      * @param  float|null  $wallHeight
      * @param  int|null  $buildingYear
      * @param  string|null  $description
-     * @param  array  $contactPhones
+     * @param  string[]  $contactPhones
      * @param  int|null  $callTimeFrom
      * @param  int|null  $callTimeTo
      */
     public function __construct(
+        int $accountId,
         array $images,
         bool $resale,
         string $walling,
@@ -126,10 +128,10 @@ class Flat implements AdvertInterface
         int $numberOfFloors,
         bool $combinedKitchen,
         int $priceAmount,
+        string $priceCurrency,
         string $sellerName,
         string $sellerUnp,
         string $contactName,
-        string $priceCurrency,
         ?float $totalArea = null,
         ?float $livingArea = null,
         ?float $kitchenArea = null,
