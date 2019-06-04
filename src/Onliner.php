@@ -169,37 +169,6 @@ class Onliner
     }
 
     /**
-     * Get the account ID.
-     *
-     * @return int
-     *
-     * @throws \RuntimeException
-     */
-    public function getAccountId(): int
-    {
-        if (!$this->loggedIn) {
-            throw new RuntimeException('Client is not logged in!');
-        }
-
-        $uri = new Uri('https://profile.onliner.by/');
-        try {
-            $response = $this->client->sendRequest($this->factory->createRequest('GET', $uri));
-        } catch (ClientExceptionInterface $e) {
-            throw new RuntimeException($e->getMessage());
-        }
-
-        if (200 !== $response->getStatusCode()) {
-            throw new RuntimeException('Error loading page: '.$uri.'!');
-        }
-
-        if (!preg_match('/window\.onlinerStatusTracker\.init\((\d+)\)\;/', $response->getBody(), $matches)) {
-            throw new RuntimeException('Error getting account ID!');
-        }
-
-        return (int)$matches[1];
-    }
-
-    /**
      * Upload an image.
      *
      * Return data example:
@@ -212,8 +181,33 @@ class Onliner
      *              'created_at' => '2019-06-04 14:55:15',
      *              'updated_at' => '2019-06-04 14:55:15',
      *              'errors'     => [],
-     *              'images'     => [],
-     *              'url'        => 'https://upload.api.onliner.by/upload/ZMs3P9uwHN5jH8tB'
+     *
+     *              'images' => [
+     *
+     *                  '1400x930' => 'https://content.onliner.by/apartment_for_sale/819328/1400x930/1d6d195d6159bc80205adf1d57e1d285.jpeg',
+     *                  '600x400'  => 'https://content.onliner.by/apartment_for_sale/819328/600x400/1d6d195d6159bc80205adf1d57e1d285.jpeg'
+     *
+     *              ],
+     *
+     *              'sizes' => [
+     *
+     *                  '1400x930' => [
+     *
+     *                      'width'  => 800,
+     *                      'height' => 600
+     *
+     *                  ],
+     *
+     *                  '600x400' => [
+     *
+     *                      'width'  => 533,
+     *                      'height' => 400
+     *
+     *                  ]
+     *
+     *              ],
+     *
+     *              'url' => 'https://upload.api.onliner.by/upload/ZMs3P9uwHN5jH8tB'
      *
      *          ]
      *      </code>
@@ -295,6 +289,34 @@ class Onliner
             throw new RuntimeException($e->getMessage());
         }
 
+        if (202 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error uploading image!');
+        }
+
+        $body = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
+
+        $uri = (new Uri('https://upload.api.onliner.by/upload/'.$body['id']))->withQuery('v=0.3906445161102299');
+        $request = $this->factory->createRequest('GET', $uri)
+            ->withAddedHeader('Cookie', 'access_token='.$this->sessionParams['access_token'])
+            ->withAddedHeader('Cookie', 'refresh_token='.$this->sessionParams['refresh_token']);
+
+        while (true) {
+            try {
+                $response = $this->client->sendRequest($request);
+            } catch (ClientExceptionInterface $e) {
+                throw new RuntimeException($e->getMessage());
+            }
+
+            if (200 !== $response->getStatusCode()) {
+                throw new RuntimeException('Error uploading image!');
+            }
+
+            $body = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
+            if ('processed' === $body['status']) {
+                break;
+            }
+        }
+
         $this->client->setConfig([
 
             'headers' => [
@@ -308,10 +330,6 @@ class Onliner
             ]
 
         ]);
-
-        if (202 !== $response->getStatusCode()) {
-            throw new RuntimeException('Error uploading image!');
-        }
 
         return json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
     }
