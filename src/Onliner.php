@@ -308,7 +308,7 @@ class Onliner
             }
 
             if (200 !== $response->getStatusCode()) {
-                throw new RuntimeException('Error uploading image!');
+                throw new RuntimeException('Error loading page: '.$uri.'!');
             }
 
             $body = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
