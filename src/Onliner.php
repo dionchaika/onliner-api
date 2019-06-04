@@ -37,7 +37,7 @@ class Onliner
     protected $loggedIn = false;
 
     /**
-     * The onliner API constructor.
+     * The API constructor.
      *
      * @param  bool  $debug
      * @param  string|null  $debugFile
