@@ -164,6 +164,7 @@ class Onliner
     public function logout(): void
     {
         $this->loggedIn = false;
+        $this->sessionParams = [];
         $this->client->getCookieStorage()->clearSessionCookies();
     }
 
