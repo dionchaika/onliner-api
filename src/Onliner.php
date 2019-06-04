@@ -229,6 +229,10 @@ class Onliner
             throw new RuntimeException($e->getMessage());
         }
 
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error loading page: '.$uri.'!');
+        }
+
         $formData = (new FormData)
             ->append('file', '@'.$filename)
             ->append('meta[type]', 'apartment-for-sale-photo');
