@@ -1,0 +1,29 @@
+{
+    "name": "dionchaika/onliner-api",
+    "description": "The Unofficial www.onliner.by API",
+    "keywords": [
+        "php",
+        "api",
+        "onliner"
+    ],
+    "homepage": "https://github.com/dionchaika/onliner-api",
+    "version": "v1.0.0",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dion Chaika",
+            "email": "dionchaika@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "API\\Onliner\\": "src/"
+        }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "require": {
+        "dionchaika/http": "dev-master"
+    }
+}
