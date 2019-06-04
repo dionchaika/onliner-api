@@ -42,11 +42,11 @@ class Onliner
     protected $loggedIn = false;
 
     /**
-     * The access token.
+     * The array of session parameters.
      *
-     * @var string
+     * @var mixed[]
      */
-    protected $accessToken;
+    protected $sessionParams = [];
 
     /**
      * The API constructor.
@@ -125,7 +125,7 @@ class Onliner
         }
 
         $this->loggedIn = true;
-        $this->accessToken = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY)['access_token'];
+        $this->sessionParams = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
     }
 
     /**
