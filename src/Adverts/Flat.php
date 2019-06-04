@@ -70,7 +70,7 @@ class Flat implements AdvertInterface
 
         'seller' => [
 
-            'type' => null,
+            'type' => 'agent',
             'name' => null,
 
             'legal_info' => [
@@ -85,4 +85,61 @@ class Flat implements AdvertInterface
         'walling'     => null
 
     ];
+
+    /**
+     * The flat advert constructor.
+     *
+     * @param  array  $images
+     * @param  bool  $resale
+     * @param  string  $walling
+     * @param  bool  $repaired
+     * @param  int  $rooms
+     * @param  bool  $balcony
+     * @param  string  $parking
+     * @param  int  $floor
+     * @param  int  $numberOfFloors
+     * @param  bool  $combinedKitchen
+     * @param  int  $priceAmount
+     * @param  string  $sellerName
+     * @param  string  $sellerUnp
+     * @param  string  $contactName
+     * @param  string  $priceCurrency
+     * @param  float|null  $totalArea
+     * @param  float|null  $livingArea
+     * @param  float|null  $kitchenArea
+     * @param  float|null  $wallHeight
+     * @param  int|null  $buildingYear
+     * @param  string|null  $description
+     * @param  array  $contactPhones
+     * @param  int|null  $callTimeFrom
+     * @param  int|null  $callTimeTo
+     */
+    public function __construct(
+        array $images,
+        bool $resale,
+        string $walling,
+        bool $repaired,
+        int $rooms,
+        bool $balcony,
+        string $parking,
+        int $floor,
+        int $numberOfFloors,
+        bool $combinedKitchen,
+        int $priceAmount,
+        string $sellerName,
+        string $sellerUnp,
+        string $contactName,
+        string $priceCurrency,
+        ?float $totalArea = null,
+        ?float $livingArea = null,
+        ?float $kitchenArea = null,
+        ?float $wallHeight = null,
+        ?int $buildingYear = null,
+        ?string $description = null,
+        array $contactPhones = [],
+        ?int $callTimeFrom = null,
+        ?int $callTimeTo = null
+    ) {
+        //
+    }
 }
