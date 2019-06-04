@@ -4,9 +4,7 @@ namespace API\Onliner;
 
 use RuntimeException;
 use Dionchaika\Http\Uri;
-use InvalidArgumentException;
 use Dionchaika\Http\Client\Client;
-use Dionchaika\Http\Utils\FormData;
 use Dionchaika\Http\Factory\RequestFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 
@@ -79,6 +77,35 @@ class Onliner
      */
     public function login(string $user, string $password): void
     {
-        //
+        $uri = new Uri('https://www.onliner.by/');
+        try {
+            $response = $this->client->sendRequest($this->factory->createRequest('GET', $uri));
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error loading page: '.$uri.'!');
+        }
+
+        $data = [
+
+            'login'    => $user,
+            'password' => $password
+
+        ];
+
+        $uri = new Uri('https://www.onliner.by/sdapi/user.api/login');
+        try {
+            $response = $this->client->sendRequest($this->factory->createJsonRequest('POST', $uri, $data));
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Login error!');
+        }
+
+        $this->loggedIn = true;
     }
 }
