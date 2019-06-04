@@ -159,20 +159,32 @@ class Onliner
             throw new InvalidArgumentException('File does not exists: '.$filename.'!');
         }
 
+        $this->client->sendRequest($this->factory->createRequest('GET', 'https://r.onliner.by/pk/apartments/create'));
+
         $formData = (new FormData)
             ->append('file', '@'.$filename)
             ->append('meta[type]', 'apartment-for-sale-photo');
 
-        $uri = (new Uri('https://upload.api.onliner.by/upload'))->withQuery('token='.$this->accessToken);
+        $uri = (new Uri('https://upload.api.onliner.by/upload'))->withQuery('token='.$this->sessionParams['access_token']);
         try {
-            $response = $this->client->sendRequest($this->factory->createFormDataRequest('POST', $uri, $formData));
+            $response = $this->client->sendRequest($this->factory->createRequest('OPTIONS', $uri));
         } catch (ClientExceptionInterface $e) {
             throw new RuntimeException($e->getMessage());
         }
 
-        if (200 !== $response->getStatusCode()) {
-            throw new RuntimeException('Error uploading image!');
+        $request = $this->factory->createFormDataRequest('POST', $uri, $formData)
+            ->withAddedHeader('Cookie', 'access_token='.$this->sessionParams['access_token'])
+            ->withAddedHeader('Cookie', 'refresh_token='.$this->sessionParams['refresh_token']);
+
+        try {
+            $response = $this->client->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
         }
+
+        // if (200 !== $response->getStatusCode()) {
+        //     throw new RuntimeException('Error uploading image!');
+        // }
 
         return json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
     }
