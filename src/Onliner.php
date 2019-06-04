@@ -283,4 +283,62 @@ class Onliner
 
         return json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
     }
+
+    /**
+     * Get the address info.
+     *
+     * Return data example:
+     *      <code>
+     *          [
+     *
+     *              'latitude'     => '52.0710712',
+     *              'longitude'    => '23.7087247',
+     *              'address'      => 'Минск, улица Советцкая, 33',
+     *              'user_address' => 'Минск, улица Советцкая, 33'
+     *
+     *          ]
+     *      </code>
+     *
+     * @param  string  $address
+     *
+     * @return mixed[]
+     *
+     * @throws \RuntimeException
+     */
+    public function getAddressInfo(string $address): array
+    {
+        if (!$this->loggedIn) {
+            throw new RuntimeException('Client is not logged in!');
+        }
+
+        $query = 'q='.rawurlencode($address)
+            .'&limit=10'
+            .'&format=json'
+            .'&countrycodes=by'
+            .'&addressdetails=1'
+            .'&accept-language=ru'
+            .'&v=0.7767891281155128';
+
+        $uri = (new Uri('https://nominatim.openstreetmap.org/search'))->withQuery($query);
+        try {
+            $response = $this->client->sendRequest($this->factory->createRequest('GET', $uri));
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error getting address info!');
+        }
+
+        $data = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
+
+        return [
+
+            'latitude'     => $data[0]['lat'],
+            'longitude'    => $data[0]['lon'],
+            'address'      => $data[0]['city'].', '.$data[0][''].(isset($data[0]['house_number']) ? ', '.$data[0]['house_number'] : ''),
+            'user_address' => $address
+
+        ];
+    }
 }
