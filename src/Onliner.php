@@ -4,7 +4,9 @@ namespace API\Onliner;
 
 use RuntimeException;
 use Dionchaika\Http\Uri;
+use InvalidArgumentException;
 use Dionchaika\Http\Client\Client;
+use Dionchaika\Http\Utils\FormData;
 use Dionchaika\Http\Factory\RequestFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 
@@ -38,6 +40,13 @@ class Onliner
      * @var bool
      */
     protected $loggedIn = false;
+
+    /**
+     * The access token.
+     *
+     * @var string
+     */
+    protected $accessToken;
 
     /**
      * The API constructor.
@@ -116,6 +125,7 @@ class Onliner
         }
 
         $this->loggedIn = true;
+        $this->accessToken = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY)['access_token'];
     }
 
     /**
@@ -127,5 +137,43 @@ class Onliner
     {
         $this->loggedIn = false;
         $this->client->getCookieStorage()->clearSessionCookies();
+    }
+
+    /**
+     * Upload an image.
+     *
+     * @param  string  $filename
+     *
+     * @return mixed[]
+     *
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     */
+    public function uploadImage(string $filename): array
+    {
+        if (!$this->loggedIn) {
+            throw new RuntimeException('Client is not logged in!');
+        }
+
+        if (!file_exists($filename)) {
+            throw new InvalidArgumentException('File does not exists: '.$filename.'!');
+        }
+
+        $formData = (new FormData)
+            ->append('file', '@'.$filename)
+            ->append('meta[type]', 'apartment-for-sale-photo');
+
+        $uri = (new Uri('https://upload.api.onliner.by/upload'))->withQuery('token='.$this->accessToken);
+        try {
+            $response = $this->client->sendRequest($this->factory->createFormDataRequest('POST', $uri, $formData));
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error uploading image!');
+        }
+
+        return json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
     }
 }
