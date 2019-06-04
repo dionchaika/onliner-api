@@ -109,6 +109,20 @@ class Onliner
 
         ];
 
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept' => 'application/json, text/plain, */*',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ]
+
+        ]);
+
         $uri = new Uri('https://www.onliner.by/sdapi/user.api/login');
         $request = $this->factory->createJsonRequest('POST', $uri, $data)
             ->withHeader('X-Api-Version', '2')
@@ -119,6 +133,20 @@ class Onliner
         } catch (ClientExceptionInterface $e) {
             throw new RuntimeException($e->getMessage());
         }
+
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept' => 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ]
+
+        ]);
 
         if (200 !== $response->getStatusCode()) {
             throw new RuntimeException('Login error!');
@@ -142,6 +170,22 @@ class Onliner
     /**
      * Upload an image.
      *
+     * Return data example:
+     *      <code>
+     *          [
+     *
+     *              'id'         => 'ZMs3P9uwHN5jH8tB',
+     *              'hash'       => 'd8c0e9882ca76491ec95d01ce062df05',
+     *              'status'     => 'uploaded',
+     *              'created_at' => '2019-06-04 14:55:15',
+     *              'updated_at' => '2019-06-04 14:55:15',
+     *              'errors'     => [],
+     *              'images'     => [],
+     *              'url'        => 'https://upload.api.onliner.by/upload/ZMs3P9uwHN5jH8tB'
+     *
+     *          ]
+     *      </code>
+     *
      * @param  string  $filename
      *
      * @return mixed[]
@@ -159,18 +203,51 @@ class Onliner
             throw new InvalidArgumentException('File does not exists: '.$filename.'!');
         }
 
-        $this->client->sendRequest($this->factory->createRequest('GET', 'https://r.onliner.by/pk/apartments/create'));
+        $uri = (new Uri('https://upload.api.onliner.by/upload'))->withQuery('token='.$this->sessionParams['access_token']);
+
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept' => '*/*',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ],
+
+            'cookies' => false
+
+        ]);
+
+        $request = $this->factory->createRequest('OPTIONS', $uri)->withHeader('Access-Control-Request-Method', 'POST');
+
+        try {
+            $response = $this->client->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
 
         $formData = (new FormData)
             ->append('file', '@'.$filename)
             ->append('meta[type]', 'apartment-for-sale-photo');
 
-        $uri = (new Uri('https://upload.api.onliner.by/upload'))->withQuery('token='.$this->sessionParams['access_token']);
-        try {
-            $response = $this->client->sendRequest($this->factory->createRequest('OPTIONS', $uri));
-        } catch (ClientExceptionInterface $e) {
-            throw new RuntimeException($e->getMessage());
-        }
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept' => 'application/json, text/plain, */*',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ],
+
+            'cookies' => true
+
+        ]);
 
         $request = $this->factory->createFormDataRequest('POST', $uri, $formData)
             ->withAddedHeader('Cookie', 'access_token='.$this->sessionParams['access_token'])
@@ -182,9 +259,23 @@ class Onliner
             throw new RuntimeException($e->getMessage());
         }
 
-        // if (200 !== $response->getStatusCode()) {
-        //     throw new RuntimeException('Error uploading image!');
-        // }
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept' => 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ]
+
+        ]);
+
+        if (202 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error uploading image!');
+        }
 
         return json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
     }
