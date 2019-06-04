@@ -334,7 +334,14 @@ class Onliner
         $data = json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
 
         if (empty($data)) {
-            return [];
+            return [
+
+                'latitude'     => '',
+                'longitude'    => '',
+                'address'      => '',
+                'user_address' => ''
+
+            ];
         }
 
         $chainedAddress = $data[0]['address']['city'].', '.$data[0]['address']['road']
