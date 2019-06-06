@@ -30,6 +30,7 @@ class Flat implements AdvertInterface
      */
     CONST PARKING_TYPE = [
 
+        ''       => 'Нет',
         'street' => 'На улице',
         'garage' => 'В гараже'
 
@@ -65,7 +66,7 @@ class Flat implements AdvertInterface
 
         'contact' => [
 
-            'call_time' => [9, 18],
+            'call_time' => [],
             'name'      => null,
             'phones'    => []
 
@@ -96,7 +97,7 @@ class Flat implements AdvertInterface
 
         ],
 
-        'resale'          => null,
+        'resale'          => false,
         'number_of_rooms' => null,
 
         'seller' => [
@@ -126,6 +127,7 @@ class Flat implements AdvertInterface
      * @param  bool  $repaired
      * @param  int  $rooms
      * @param  bool  $balcony
+     * @param  string  $parking
      * @param  int  $floor
      * @param  int  $numberOfFloors
      * @param  bool  $combinedKitchen
@@ -134,7 +136,6 @@ class Flat implements AdvertInterface
      * @param  string  $sellerName
      * @param  string  $sellerUnp
      * @param  string  $contactName
-     * @param  string|null  $parking
      * @param  float|null  $totalArea
      * @param  float|null  $livingArea
      * @param  float|null  $kitchenArea
@@ -152,6 +153,7 @@ class Flat implements AdvertInterface
         bool $repaired,
         int $rooms,
         bool $balcony,
+        string $parking,
         int $floor,
         int $numberOfFloors,
         bool $combinedKitchen,
@@ -160,7 +162,6 @@ class Flat implements AdvertInterface
         string $sellerName,
         string $sellerUnp,
         string $contactName,
-        ?string $parking = null,
         ?float $totalArea = null,
         ?float $livingArea = null,
         ?float $kitchenArea = null,
@@ -172,7 +173,7 @@ class Flat implements AdvertInterface
         int $callTimeTo = 18
     ) {
         $this->data['photos'] = $images;
-        $this->data['resale'] = $resale ? 1 : null;
+        $this->data['resale'] = $resale;
         $this->data['walling'] = $walling;
 
         if ($repaired) {
@@ -209,7 +210,7 @@ class Flat implements AdvertInterface
 
         $this->data['number_of_floors'] = $numberOfFloors;
 
-        $this->data['price']['amount'] = round((float)$priceAmount, 2);
+        $this->data['price']['amount'] = $priceAmount.'.00';
         $this->data['price']['currency'] = $priceCurrency;
         $this->data['seller']['name'] = $sellerName;
         $this->data['seller']['legal_info']['unp'] = $sellerUnp;
@@ -225,7 +226,7 @@ class Flat implements AdvertInterface
             $buildingYear = 2029;
         }
 
-        $this->data['building_year'] = $buildingYear;
+        $this->data['building_year'] = (string)$buildingYear;
 
         $this->data['description'] = trim($description);
         $this->data['contact']['phones'] = array_slice($contactPhones, 0, 3);
@@ -306,6 +307,6 @@ class Flat implements AdvertInterface
     public function getRequest(): RequestInterface
     {
         $uri = new Uri('https://pk.api.onliner.by/apartments');
-        return (new RequestFactory)->createJsonRequest('POST', $uri, $this->data, [\JSON_PRETTY_PRINT, \JSON_NUMERIC_CHECK, \JSON_UNESCAPED_SLASHES, \JSON_UNESCAPED_UNICODE]);
+        return (new RequestFactory)->createJsonRequest('POST', $uri, $this->data, [\JSON_PRETTY_PRINT, \JSON_UNESCAPED_SLASHES, \JSON_UNESCAPED_UNICODE]);
     }
 }
