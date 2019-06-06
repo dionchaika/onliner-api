@@ -113,7 +113,7 @@ class Onliner
 
             'headers' => [
 
-                'Accept' => 'application/json, text/plain, */*',
+                'Accept'          => 'application/json, text/plain, */*',
                 'Accept-Encoding' => 'gzip, deflate',
                 'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
 
@@ -138,7 +138,7 @@ class Onliner
 
             'headers' => [
 
-                'Accept' => 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3',
+                'Accept'          => 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3',
                 'Accept-Encoding' => 'gzip, deflate',
                 'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
 
@@ -166,6 +166,108 @@ class Onliner
         $this->loggedIn = false;
         $this->sessionParams = [];
         $this->client->getCookieStorage()->clearSessionCookies();
+    }
+
+    /**
+     * Post an advert.
+     *
+     * @param  \API\Onliner\AdvertInterface  $advert
+     *
+     * @return mixed[]
+     *
+     * @throws \RuntimeException
+     */
+    public function postAdvert(AdvertInterface $advert): array
+    {
+        if (!$this->loggedIn) {
+            throw new RuntimeException('Client is not logged in!');
+        }
+
+        $uri = new Uri('https://r.onliner.by/pk/apartments/create');
+        try {
+            $response = $this->client->sendRequest($this->factory->createRequest('GET', $uri));
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error loading page: '.$uri.'!');
+        }
+
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept'          => '*/*',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ],
+
+            'cookies' => false
+
+        ]);
+
+        $uri = new Uri('https://pk.api.onliner.by/apartments');
+        $request = $this->factory->createRequest('OPTIONS', $uri)->withHeader('Access-Control-Request-Method', 'POST');
+
+        try {
+            $response = $this->client->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        if (200 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error loading page: '.$uri.'!');
+        }
+
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept'          => 'application/json, text/plain, */*',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ],
+
+            'cookies' => true
+
+        ]);
+
+        $request = $advert->getRequest()
+            ->withAddedHeader('Cookie', 'access_token='.$this->sessionParams['access_token'])
+            ->withAddedHeader('Cookie', 'refresh_token='.$this->sessionParams['refresh_token']);
+
+        try {
+            $response = $this->client->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        $this->client->setConfig([
+
+            'headers' => [
+
+                'Accept'          => 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
+
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+
+            ]
+
+        ]);
+
+        if (201 !== $response->getStatusCode()) {
+            throw new RuntimeException('Error posting advert!');
+        }
+
+        return json_decode($response->getBody(), \JSON_OBJECT_AS_ARRAY);
     }
 
     /**
@@ -235,7 +337,7 @@ class Onliner
 
             'headers' => [
 
-                'Accept' => '*/*',
+                'Accept'          => '*/*',
                 'Accept-Encoding' => 'gzip, deflate',
                 'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
 
@@ -267,7 +369,7 @@ class Onliner
 
             'headers' => [
 
-                'Accept' => 'application/json, text/plain, */*',
+                'Accept'          => 'application/json, text/plain, */*',
                 'Accept-Encoding' => 'gzip, deflate',
                 'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
 
@@ -321,7 +423,7 @@ class Onliner
 
             'headers' => [
 
-                'Accept' => 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3',
+                'Accept'          => 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3',
                 'Accept-Encoding' => 'gzip, deflate',
                 'Accept-Language' => 'ru-RU, ru; q=0.9, en-US; q=0.8, en; q=0.7',
 
