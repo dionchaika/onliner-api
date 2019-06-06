@@ -307,6 +307,6 @@ class Flat implements AdvertInterface
     public function getRequest(): RequestInterface
     {
         $uri = new Uri('https://pk.api.onliner.by/apartments');
-        return (new RequestFactory)->createJsonRequest('POST', $uri, $this->data, [\JSON_UNESCAPED_UNICODE, \JSON_UNESCAPED_SLASHES]);
+        return (new RequestFactory)->createJsonRequest('POST', $uri, $this->data, [\JSON_PRETTY_PRINT, \JSON_UNESCAPED_SLASHES, \JSON_UNESCAPED_UNICODE]);
     }
 }
