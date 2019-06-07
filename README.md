@@ -79,11 +79,8 @@ try {
 
     $result = $onliner->postAdvert($flatAdvert);
 
-    if (isset($result['id'])) {
-        // Success
-    } else {
-        // Failed
-    }
+    echo $result['id'];
+    echo $result['url'];
 
 } catch (Throwable $e) {
 
