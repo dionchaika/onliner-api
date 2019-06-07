@@ -171,6 +171,53 @@ class Onliner
     /**
      * Post an advert.
      *
+     * Return data example:
+     *      <code>
+     *          [
+     *
+     *              'id' => 123456,
+     *
+     *              'author' => [
+     *
+     *                  'id'  => 456789,
+     *                  'url' => 'https://profile.onliner.by/user/456789'
+     *
+     *              ],
+     *
+     *              'price' => [
+     *
+     *                  'amount'   => '50000.00',
+     *                  'currency' => 'USD',
+     *
+     *                  'converted' => [
+     *
+     *                      'BYN' => [
+     *
+     *                          'amount'   => '104955.00',
+     *                          'currency' => 'BYN'
+     *
+     *                      ],
+     *                      'USD' => [
+     *
+     *                          'amount'   => '50000.00',
+     *                          'currency' => 'USD'
+     *
+     *                      ]
+     *
+     *                  ]
+     *
+     *              ],
+     *
+     *              'created_at'      => '2019-06-07T12:45:27+0300',
+     *              'updated_at'      => '2019-06-07T12:45:27+0300',
+     *              'deleted_at'      => null,
+     *              'last_time_up'    => '2019-06-07T12:45:27+0300',
+     *              'up_available_in' => 259200,
+     *              'url'             => 'https://r.onliner.by/pk/apartments/123456'
+     *
+     *          ]
+     *      </code>
+     *
      * @param  \API\Onliner\AdvertInterface  $advert
      *
      * @return mixed[]
